@@ -58,9 +58,11 @@ if st.session_state.get("page") == 3:
     st.subheader("興趣與經歷")
     interests_list = ["程式", "數學", "英文", "積木", "繪畫", "閱讀", "寫作", "表達", "邏輯推理", "機器人", "團隊合作", "領導", "設計"]
     interests = []
-    for i in interests_list:
-        if st.checkbox(i):
-            interests.append(i)
+    cols = st.columns(4)
+    for i, interest in enumerate(interests_list):
+        if cols[i % 4].checkbox(interest):
+            interests.append(interest)
+
     experience = st.text_area("參賽或個人經歷簡述")
 
     if st.button("生成 PDF 報告"):
