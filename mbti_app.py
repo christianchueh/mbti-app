@@ -92,7 +92,9 @@ if st.session_state.get("page") == 3:
 
         pdf.cell(200, 10, txt="MBTI Test Report", ln=True, align='C')
         pdf.ln(10)
-        pdf.multi_cell(0, 10, txt=f"Name: User    Age: {st.session_state.age}    Gender: {st.session_state.gender}")
+        name_str = st.session_state.name if st.session_state.name else "User"
+        gender_en = {'男': 'Male', '女': 'Female', '其他': 'Other'}.get(st.session_state.gender, 'Other')
+        pdf.multi_cell(0, 10, txt=f"Name: {name_str}    Age: {st.session_state.age}    Gender: {gender_en}")
         pdf.cell(200, 10, txt=f"MBTI Personality Type: {result}", ln=True)
         for pair in [('E', 'I'), ('S', 'N'), ('T', 'F'), ('J', 'P')]:
             pdf.cell(200, 10, txt=f"{pair[0]}: {scores[pair[0]]} / {pair[1]}: {scores[pair[1]]}", ln=True)
