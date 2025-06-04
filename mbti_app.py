@@ -84,7 +84,7 @@ if st.session_state.get("page") == 3:
         plt.savefig(tmp_img.name)
         plt.close()
 
-        # 建立 PDF（純英文內容）
+        # 建立 PDF（完全英文內容，避免亂碼）
         tmp_pdf = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False)
         pdf = FPDF()
         pdf.add_page()
@@ -92,7 +92,7 @@ if st.session_state.get("page") == 3:
 
         pdf.cell(200, 10, txt="MBTI Test Report", ln=True, align='C')
         pdf.ln(10)
-        pdf.multi_cell(0, 10, txt=f"Name: {st.session_state.name}    Age: {st.session_state.age}    Gender: {st.session_state.gender}")
+        pdf.multi_cell(0, 10, txt=f"Name: User    Age: {st.session_state.age}    Gender: {st.session_state.gender}")
         pdf.cell(200, 10, txt=f"MBTI Personality Type: {result}", ln=True)
         for pair in [('E', 'I'), ('S', 'N'), ('T', 'F'), ('J', 'P')]:
             pdf.cell(200, 10, txt=f"{pair[0]}: {scores[pair[0]]} / {pair[1]}: {scores[pair[1]]}", ln=True)
@@ -104,4 +104,4 @@ if st.session_state.get("page") == 3:
 
         pdf.output(tmp_pdf.name)
         with open(tmp_pdf.name, "rb") as f:
-            st.download_button("📄 下載 PDF 報告", f, file_name="MBTI_報告.pdf")
+            st.download_button("📄 下載 PDF 報告", f, file_name="MBTI_Report.pdf")
