@@ -44,7 +44,7 @@ if st.session_state.get("page") == 2:
 
 if st.session_state.get("page") == 3:
     st.subheader("興趣與經歷")
-    interests_list = ["程式", "數學", "英文", "積木", "繪畫", "閱讀", "寫作", "表達", "邏輯推理", "機器人", "團隊合作", "領導", "設計"]
+    interests_list = ["Programming", "數學", "英文", "積木", "繪畫", "閱讀", "寫作", "表達", "邏輯推理", "機器人", "團隊合作", "領導", "設計"]
     interests = st.multiselect("請選擇您的興趣：", interests_list)
     experience = st.text_area("參賽或個人經歷簡述")
 
