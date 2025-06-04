@@ -115,9 +115,8 @@ if st.session_state.get("page") == 3:
         # 建立 PDF
         tmp_pdf = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False)
         pdf = FPDF()
-        pdf.add_font('NotoSansTC', '', 'NotoSansTC[wght].ttf', uni=True)
         pdf.add_page()
-        pdf.set_font("NotoSansTC", size=12)
+        pdf.set_font("Arial", size=12)
 
         pdf.cell(200, 10, "MBTI Test Report", new_x="LMARGIN", new_y="NEXT", align='C')
         pdf.ln(10)
