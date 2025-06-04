@@ -117,7 +117,7 @@ if st.session_state.get("page") == 3:
         pdf = FPDF()
         pdf.add_font("NotoSansTC[wght].ttf")
         pdf.add_page()
-        pdf.set_font("NotoSansTC[wght]", size=12)
+        pdf.set_font("NotoSansTC", size=12)
 
         pdf.cell(200, 10, "MBTI Test Report", new_x="LMARGIN", new_y="NEXT", align='C')
         pdf.ln(10)
