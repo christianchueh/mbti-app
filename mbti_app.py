@@ -88,7 +88,7 @@ if st.session_state.get("page") == 3:
         tmp_pdf = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False)
         pdf = FPDF()
         pdf.add_page()
-        pdf.add_font("Noto", style="", fname="NotoSansTC-VariableFont_wght.ttf", uni=True)
+        pdf.add_font("Noto", style="", fname="NotoSansTC[wght].ttf", uni=True)
         pdf.set_font("Noto", size=12)
 
         pdf.cell(200, 10, txt="MBTI 測驗報告", ln=True, align='C')
