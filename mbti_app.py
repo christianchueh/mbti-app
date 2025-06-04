@@ -1,4 +1,4 @@
-# 可在 Google Colab 或 Streamlit Cloud 執行的 MBTI 測驗（使用 fpdf2 英文版）
+# MBTI Test System (English version for Google Colab / Streamlit Cloud)
 import streamlit as st
 import matplotlib.pyplot as plt
 import numpy as np
@@ -6,16 +6,16 @@ import tempfile
 import os
 from fpdf import FPDF
 
-st.set_page_config(page_title="MBTI 測驗系統", layout="centered")
+st.set_page_config(page_title="MBTI Test System", layout="centered")
 
-st.title("MBTI 測驗系統")
+st.title("MBTI Test System")
 
-# 第一頁：個人資料
+# Page 1: User Info
 with st.form("user_info"):
-    name = st.text_input("姓名")
-    age = st.number_input("年紀", min_value=0, max_value=120, step=1)
-    gender = st.selectbox("性別", ["男", "女", "其他"])
-    next1 = st.form_submit_button("下一頁")
+    name = st.text_input("Name")
+    age = st.number_input("Age", min_value=0, max_value=120, step=1)
+    gender = st.selectbox("Gender", ["Male", "Female", "Other"])
+    next1 = st.form_submit_button("Next")
 
 if next1 and name:
     st.session_state.name = name
@@ -24,33 +24,33 @@ if next1 and name:
     st.session_state.page = 2
 
 if st.session_state.get("page") == 2:
-    st.subheader("MBTI 測驗 (30題)")
+    st.subheader("MBTI Test (30 questions)")
     mbti_questions = [
-        ("我喜歡參加社交活動。", 'E'), ("我偏好獨處時間。", 'I'),
-        ("我做決定時依據邏輯。", 'T'), ("我做決定時依據感受。", 'F'),
-        ("我偏好事先規劃好一切。", 'J'), ("我偏好隨機應變。", 'P'),
-        ("我關注具體細節。", 'S'), ("我著重大局與可能性。", 'N'),
+        ("I enjoy attending social events.", 'E'), ("I prefer spending time alone.", 'I'),
+        ("I make decisions based on logic.", 'T'), ("I make decisions based on feelings.", 'F'),
+        ("I prefer to plan ahead.", 'J'), ("I prefer to be spontaneous.", 'P'),
+        ("I focus on concrete details.", 'S'), ("I focus on the big picture and possibilities.", 'N'),
     ] * 4
     mbti_answers = []
     with st.form("mbti_form"):
         for i, (q, d) in enumerate(mbti_questions[:30]):
-            ans = st.radio(f"問題 {i+1}: {q}", ["非常同意", "同意", "普通", "不同意", "非常不同意"], key=f"q{i}")
+            ans = st.radio(f"Question {i+1}: {q}", ["Strongly Agree", "Agree", "Neutral", "Disagree", "Strongly Disagree"], key=f"q{i}")
             mbti_answers.append((ans, d))
-        next2 = st.form_submit_button("下一頁")
+        next2 = st.form_submit_button("Next")
 
     if next2:
         st.session_state.mbti = mbti_answers
         st.session_state.page = 3
 
 if st.session_state.get("page") == 3:
-    st.subheader("興趣與經歷")
-    interests_list = ["Programming", "數學", "英文", "積木", "繪畫", "閱讀", "寫作", "表達", "邏輯推理", "機器人", "團隊合作", "領導", "設計"]
-    interests = st.multiselect("請選擇您的興趣：", interests_list)
-    experience = st.text_area("參賽或個人經歷簡述")
+    st.subheader("Interests & Experiences")
+    interests_list = ["Programming", "Math", "English", "Blocks", "Drawing", "Reading", "Writing", "Speaking", "Logic", "Robotics", "Teamwork", "Leadership", "Design"]
+    interests = st.multiselect("Select your interests:", interests_list)
+    experience = st.text_area("Briefly describe your personal or competition experience")
 
-    if st.button("生成 PDF 報告"):
+    if st.button("Generate PDF Report"):
         scores = {'E': 0, 'I': 0, 'S': 0, 'N': 0, 'T': 0, 'F': 0, 'J': 0, 'P': 0}
-        mapping = {"非常同意": 1, "同意": 2, "普通": 3, "不同意": 4, "非常不同意": 5}
+        mapping = {"Strongly Agree": 1, "Agree": 2, "Neutral": 3, "Disagree": 4, "Strongly Disagree": 5}
         for ans, dim in st.session_state.mbti:
             val = mapping[ans]
             if dim in ['E', 'S', 'T', 'J']:
@@ -65,7 +65,7 @@ if st.session_state.get("page") == 3:
             'J' if scores['J'] >= scores['P'] else 'P'
         ])
 
-        # 雷達圖
+        # Radar Chart
         labels = ['E', 'I', 'S', 'N', 'T', 'F', 'J', 'P']
         values = [scores[l] for l in labels]
         angles = np.linspace(0, 2 * np.pi, len(labels), endpoint=False).tolist()
@@ -78,13 +78,13 @@ if st.session_state.get("page") == 3:
         ax.set_xticks(angles[:-1])
         ax.set_xticklabels(labels)
         ax.set_yticklabels([])
-        ax.set_title("MBTI 向度雷達圖")
+        ax.set_title("MBTI Dimensions Radar Chart")
 
         tmp_img = tempfile.NamedTemporaryFile(suffix=".png", delete=False)
         plt.savefig(tmp_img.name)
         plt.close()
 
-        # 建立 PDF（完全英文內容，避免亂碼）
+        # Create PDF (fully English)
         tmp_pdf = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False)
         pdf = FPDF()
         pdf.add_page()
@@ -93,8 +93,7 @@ if st.session_state.get("page") == 3:
         pdf.cell(200, 10, txt="MBTI Test Report", ln=True, align='C')
         pdf.ln(10)
         name_str = st.session_state.name if st.session_state.name else "User"
-        gender_en = {'男': 'Male', '女': 'Female', '其他': 'Other'}.get(st.session_state.gender, 'Other')
-        pdf.multi_cell(0, 10, txt=f"Name: {name_str}    Age: {st.session_state.age}    Gender: {gender_en}")
+        pdf.multi_cell(0, 10, txt=f"Name: {name_str}    Age: {st.session_state.age}    Gender: {st.session_state.gender}")
         pdf.cell(200, 10, txt=f"MBTI Personality Type: {result}", ln=True)
         for pair in [('E', 'I'), ('S', 'N'), ('T', 'F'), ('J', 'P')]:
             pdf.cell(200, 10, txt=f"{pair[0]}: {scores[pair[0]]} / {pair[1]}: {scores[pair[1]]}", ln=True)
@@ -106,4 +105,4 @@ if st.session_state.get("page") == 3:
 
         pdf.output(tmp_pdf.name)
         with open(tmp_pdf.name, "rb") as f:
-            st.download_button("📄 下載 PDF 報告", f, file_name="MBTI_Report.pdf")
+            st.download_button("📄 Download PDF Report", f, file_name="MBTI_Report.pdf")
