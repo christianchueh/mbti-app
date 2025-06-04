@@ -92,8 +92,7 @@ if st.session_state.get("page") == 3:
 
         # 使用 reportlab 產生 PDF（含中文字體）
         tmp_pdf = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False)
-        pdfmetrics.registerFont(TTFont('Noto', 'NotoSansTC-VariableFont_wght.ttf
-'))  # 請上傳字體檔案
+        pdfmetrics.registerFont(TTFont('Noto', 'NotoSansTC-VariableFont_wght.ttf'))  # 請上傳字體檔案
         doc = SimpleDocTemplate(tmp_pdf.name, pagesize=A4)
         styles = getSampleStyleSheet()
         styles['Normal'].fontName = 'Noto'
