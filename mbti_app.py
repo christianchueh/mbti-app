@@ -1,4 +1,4 @@
-
+# MBTI Test System (中文題目＋嵌入圖片 PDF 避免亂碼)
 import streamlit as st
 import matplotlib.pyplot as plt
 import numpy as np
@@ -57,7 +57,10 @@ if st.session_state.get("page") == 2:
 if st.session_state.get("page") == 3:
     st.subheader("興趣與經歷")
     interests_list = ["程式", "數學", "英文", "積木", "繪畫", "閱讀", "寫作", "表達", "邏輯推理", "機器人", "團隊合作", "領導", "設計"]
-    interests = st.multiselect("請選擇您的興趣：", interests_list)
+    interests = []
+    for i in interests_list:
+        if st.checkbox(i):
+            interests.append(i)
     experience = st.text_area("參賽或個人經歷簡述")
 
     if st.button("生成 PDF 報告"):
@@ -77,7 +80,6 @@ if st.session_state.get("page") == 3:
             'J' if scores['J'] >= scores['P'] else 'P'
         ])
 
-        # 雷達圖
         labels = ['E', 'I', 'S', 'N', 'T', 'F', 'J', 'P']
         values = [scores[l] for l in labels]
         angles = np.linspace(0, 2 * np.pi, len(labels), endpoint=False).tolist()
@@ -96,7 +98,6 @@ if st.session_state.get("page") == 3:
         plt.savefig(tmp_img.name)
         plt.close()
 
-        # 建立包含中文姓名、興趣、經歷的圖片
         img_width, img_height = 800, 500
         info_img = Image.new("RGB", (img_width, img_height), "white")
         draw = ImageDraw.Draw(info_img)
@@ -112,15 +113,15 @@ if st.session_state.get("page") == 3:
         info_img_file = tempfile.NamedTemporaryFile(suffix=".png", delete=False)
         info_img.save(info_img_file.name)
 
-        # 建立 PDF
         tmp_pdf = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False)
         pdf = FPDF()
         pdf.add_page()
         pdf.set_font("Arial", size=12)
 
         pdf.cell(200, 10, "MBTI Test Report", new_x="LMARGIN", new_y="NEXT", align='C')
-        pdf.ln(10)
+        pdf.set_x(10)
         pdf.cell(200, 10, f"MBTI Personality Type: {result}", new_x="LMARGIN", new_y="NEXT")
+        pdf.set_x(10)
         for pair in [('E', 'I'), ('S', 'N'), ('T', 'F'), ('J', 'P')]:
             pdf.cell(200, 10, f"{pair[0]}: {scores[pair[0]]} / {pair[1]}: {scores[pair[1]]}", new_x="LMARGIN", new_y="NEXT")
         pdf.ln(5)
