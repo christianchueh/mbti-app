@@ -1,4 +1,4 @@
-# 可在 Google Colab 或 Streamlit Cloud 執行的 MBTI 測驗（使用 fpdf2）
+# 可在 Google Colab 或 Streamlit Cloud 執行的 MBTI 測驗（使用 fpdf2 英文版）
 import streamlit as st
 import matplotlib.pyplot as plt
 import numpy as np
@@ -65,7 +65,7 @@ if st.session_state.get("page") == 3:
             'J' if scores['J'] >= scores['P'] else 'P'
         ])
 
-        # 產生雷達圖
+        # 雷達圖
         labels = ['E', 'I', 'S', 'N', 'T', 'F', 'J', 'P']
         values = [scores[l] for l in labels]
         angles = np.linspace(0, 2 * np.pi, len(labels), endpoint=False).tolist()
@@ -84,23 +84,22 @@ if st.session_state.get("page") == 3:
         plt.savefig(tmp_img.name)
         plt.close()
 
-        # 使用 fpdf2 建立 PDF
+        # 建立 PDF（純英文內容）
         tmp_pdf = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False)
         pdf = FPDF()
         pdf.add_page()
-        pdf.add_font("Noto", style="", fname="NotoSansTC[wght].ttf", uni=True)
-        pdf.set_font("Noto", size=12)
+        pdf.set_font("Arial", size=12)
 
-        pdf.cell(200, 10, txt="MBTI 測驗報告", ln=True, align='C')
+        pdf.cell(200, 10, txt="MBTI Test Report", ln=True, align='C')
         pdf.ln(10)
-        pdf.multi_cell(0, 10, txt=f"姓名: {st.session_state.name} 年紀: {st.session_state.age} 性別: {st.session_state.gender}")
-        pdf.cell(200, 10, txt=f"MBTI 人格類型: {result}", ln=True)
+        pdf.multi_cell(0, 10, txt=f"Name: {st.session_state.name}    Age: {st.session_state.age}    Gender: {st.session_state.gender}")
+        pdf.cell(200, 10, txt=f"MBTI Personality Type: {result}", ln=True)
         for pair in [('E', 'I'), ('S', 'N'), ('T', 'F'), ('J', 'P')]:
             pdf.cell(200, 10, txt=f"{pair[0]}: {scores[pair[0]]} / {pair[1]}: {scores[pair[1]]}", ln=True)
         pdf.ln(5)
-        pdf.multi_cell(0, 10, txt="興趣: " + ", ".join(interests))
+        pdf.multi_cell(0, 10, txt="Interests: " + ", ".join(interests))
         pdf.ln(2)
-        pdf.multi_cell(0, 10, txt="經歷: " + experience)
+        pdf.multi_cell(0, 10, txt="Experience: " + experience)
         pdf.image(tmp_img.name, x=50, w=100)
 
         pdf.output(tmp_pdf.name)
