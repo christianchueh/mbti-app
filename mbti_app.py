@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import tempfile
 from fpdf import FPDF
+import os
 
 st.set_page_config(page_title="MBTI 測驗系統", layout="centered")
 
@@ -83,23 +84,27 @@ if st.session_state.get("page") == 3:
         plt.savefig(tmp_img.name)
         plt.close()
 
-        # 建立 PDF
-        pdf = FPDF()
-        pdf.add_page()
-        pdf.add_font("Arial", style="", fname="/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", uni=True)
-        pdf.set_font("Arial", size=12)
+        # 建立 PDF，使用支援中文的字型
+        font_path = "/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc"
+        if not os.path.exists(font_path):
+            st.error("找不到支援中文的字型，請安裝 NotoSansCJK-Regular.ttc")
+        else:
+            pdf = FPDF()
+            pdf.add_page()
+            pdf.add_font("Noto", style="", fname=font_path, uni=True)
+            pdf.set_font("Noto", size=12)
 
-        pdf.cell(200, 10, txt="MBTI 測驗報告", ln=True, align='C')
-        pdf.ln(10)
-        pdf.multi_cell(0, 10, f"姓名: {st.session_state.name} 年紀: {st.session_state.age} 性別: {st.session_state.gender}")
-        pdf.cell(200, 10, txt=f"MBTI 人格類型: {result}", ln=True)
-        for pair in [('E', 'I'), ('S', 'N'), ('T', 'F'), ('J', 'P')]:
-            pdf.cell(200, 10, txt=f"{pair[0]}: {scores[pair[0]]} / {pair[1]}: {scores[pair[1]]}", ln=True)
-        pdf.multi_cell(0, 10, "興趣: " + ", ".join(interests))
-        pdf.multi_cell(0, 10, "經歷: " + experience)
-        pdf.image(tmp_img.name, x=50, w=100)
+            pdf.cell(200, 10, txt="MBTI 測驗報告", ln=True, align='C')
+            pdf.ln(10)
+            pdf.multi_cell(0, 10, f"姓名: {st.session_state.name} 年紀: {st.session_state.age} 性別: {st.session_state.gender}")
+            pdf.cell(200, 10, txt=f"MBTI 人格類型: {result}", ln=True)
+            for pair in [('E', 'I'), ('S', 'N'), ('T', 'F'), ('J', 'P')]:
+                pdf.cell(200, 10, txt=f"{pair[0]}: {scores[pair[0]]} / {pair[1]}: {scores[pair[1]]}", ln=True)
+            pdf.multi_cell(0, 10, "興趣: " + ", ".join(interests))
+            pdf.multi_cell(0, 10, "經歷: " + experience)
+            pdf.image(tmp_img.name, x=50, w=100)
 
-        tmp_pdf = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False)
-        pdf.output(tmp_pdf.name)
-        with open(tmp_pdf.name, "rb") as f:
-            st.download_button("📄 下載 PDF 報告", f, file_name="MBTI_報告.pdf")
+            tmp_pdf = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False)
+            pdf.output(tmp_pdf.name)
+            with open(tmp_pdf.name, "rb") as f:
+                st.download_button("📄 下載 PDF 報告", f, file_name="MBTI_報告.pdf")
