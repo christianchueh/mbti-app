@@ -90,7 +90,7 @@ if st.session_state.get("page") == 3:
         ax.set_xticks(angles[:-1])
         ax.set_xticklabels(labels)
         ax.set_yticklabels([])
-        ax.set_title("MBTI 向度雷達圖")
+        ax.set_title("MBTI Rader Chart")
 
         tmp_img = tempfile.NamedTemporaryFile(suffix=".png", delete=False)
         plt.savefig(tmp_img.name)
@@ -101,7 +101,7 @@ if st.session_state.get("page") == 3:
         info_img = Image.new("RGB", (img_width, img_height), "white")
         draw = ImageDraw.Draw(info_img)
         try:
-            font = ImageFont.truetype("NotoSansTC-Regular.otf", size=22)
+            font = ImageFont.truetype("NotoSansTC[wght].ttf", size=22)
         except:
             font = ImageFont.load_default()
 
