@@ -12,49 +12,57 @@ st.set_page_config(page_title="MBTI 測驗系統", layout="centered")
 st.title("MBTI 測驗系統")
 
 # 第一頁：個人資料
-with st.form("user_info"):
-    name = st.text_input("姓名")
-    age = st.number_input("年紀", min_value=0, max_value=120, step=1)
-    gender = st.selectbox("性別", ["男", "女", "其他"])
-    next1 = st.form_submit_button("下一頁")
+if "page" not in st.session_state:
+    st.session_state.page = 1
+if "mbti_answers" not in st.session_state:
+    st.session_state.mbti_answers = []
+if "question_index" not in st.session_state:
+    st.session_state.question_index = 0
 
-if next1 and name:
-    st.session_state.name = name
-    st.session_state.age = age
-    st.session_state.gender = gender
-    st.session_state.page = 2
+if st.session_state.page == 1:
+    with st.form("user_info"):
+        name = st.text_input("姓名")
+        age = st.number_input("年紀", min_value=0, max_value=120, step=1)
+        gender = st.selectbox("性別", ["男", "女", "其他"])
+        next1 = st.form_submit_button("下一頁")
 
-if st.session_state.get("page") == 2:
+    if next1 and name:
+        st.session_state.name = name
+        st.session_state.age = age
+        st.session_state.gender = gender
+        st.session_state.page = 2
+
+mbti_questions = [
+    ("我喜歡參加社交活動。", 'E'), ("我偏好獨處時間。", 'I'),
+    ("我做決定時依據邏輯。", 'T'), ("我做決定時依據感受。", 'F'),
+    ("我偏好事先規劃好一切。", 'J'), ("我偏好隨機應變。", 'P'),
+    ("我關注具體細節。", 'S'), ("我著重大局與可能性。", 'N'),
+    ("我在人群中感到充滿活力。", 'E'), ("我獨處時感到充電。", 'I'),
+    ("我習慣用理性解決問題。", 'T'), ("我重視他人感受。", 'F'),
+    ("我喜歡列出待辦清單。", 'J'), ("我傾向臨場反應。", 'P'),
+    ("我觀察力敏銳、注重現實。", 'S'), ("我喜歡幻想與可能性。", 'N'),
+    ("我喜歡和很多人互動。", 'E'), ("我只和熟悉的人互動。", 'I'),
+    ("我說話直白。", 'T'), ("我說話委婉。", 'F'),
+    ("我喜歡掌控事情的進度。", 'J'), ("我隨遇而安。", 'P'),
+    ("我相信眼見為憑。", 'S'), ("我相信直覺。", 'N'),
+    ("我重視效率。", 'T'), ("我重視和諧。", 'F'),
+    ("我會把事情安排妥當。", 'J'), ("我容易被突發事件吸引。", 'P'),
+    ("我依據現實做選擇。", 'S'), ("我經常腦中浮現新想法。", 'N')
+]
+
+if st.session_state.page == 2:
     st.subheader("MBTI 測驗 (30題)")
-    mbti_questions = [
-        ("我喜歡參加社交活動。", 'E'), ("我偏好獨處時間。", 'I'),
-        ("我做決定時依據邏輯。", 'T'), ("我做決定時依據感受。", 'F'),
-        ("我偏好事先規劃好一切。", 'J'), ("我偏好隨機應變。", 'P'),
-        ("我關注具體細節。", 'S'), ("我著重大局與可能性。", 'N'),
-        ("我在人群中感到充滿活力。", 'E'), ("我獨處時感到充電。", 'I'),
-        ("我習慣用理性解決問題。", 'T'), ("我重視他人感受。", 'F'),
-        ("我喜歡列出待辦清單。", 'J'), ("我傾向臨場反應。", 'P'),
-        ("我觀察力敏銳、注重現實。", 'S'), ("我喜歡幻想與可能性。", 'N'),
-        ("我喜歡和很多人互動。", 'E'), ("我只和熟悉的人互動。", 'I'),
-        ("我說話直白。", 'T'), ("我說話委婉。", 'F'),
-        ("我喜歡掌控事情的進度。", 'J'), ("我隨遇而安。", 'P'),
-        ("我相信眼見為憑。", 'S'), ("我相信直覺。", 'N'),
-        ("我重視效率。", 'T'), ("我重視和諧。", 'F'),
-        ("我會把事情安排妥當。", 'J'), ("我容易被突發事件吸引。", 'P'),
-        ("我依據現實做選擇。", 'S'), ("我經常腦中浮現新想法。", 'N')
-    ]
-    mbti_answers = []
-    with st.form("mbti_form"):
-        for i, (q, d) in enumerate(mbti_questions):
-            ans = st.radio(f"問題 {i+1}: {q}", ["非常同意", "同意", "普通", "不同意", "非常不同意"], key=f"q{i}")
-            mbti_answers.append((ans, d))
-        next2 = st.form_submit_button("下一頁")
+    index = st.session_state.question_index
+    question, dimension = mbti_questions[index]
+    answer = st.radio(f"問題 {index+1}: {question}", ["非常同意", "同意", "普通", "不同意", "非常不同意"], key=f"q{index}")
 
-    if next2:
-        st.session_state.mbti = mbti_answers
-        st.session_state.page = 3
+    if st.button("下一題"):
+        st.session_state.mbti_answers.append((answer, dimension))
+        st.session_state.question_index += 1
+        if st.session_state.question_index >= len(mbti_questions):
+            st.session_state.page = 3
 
-if st.session_state.get("page") == 3:
+if st.session_state.page == 3:
     st.subheader("興趣與經歷")
     interests_list = ["程式", "數學", "英文", "積木", "繪畫", "閱讀", "寫作", "表達", "邏輯推理", "機器人", "團隊合作", "領導", "設計"]
     interests = []
@@ -68,7 +76,7 @@ if st.session_state.get("page") == 3:
     if st.button("生成 PDF 報告"):
         scores = {'E': 0, 'I': 0, 'S': 0, 'N': 0, 'T': 0, 'F': 0, 'J': 0, 'P': 0}
         mapping = {"非常同意": 1, "同意": 2, "普通": 3, "不同意": 4, "非常不同意": 5}
-        for ans, dim in st.session_state.mbti:
+        for ans, dim in st.session_state.mbti_answers:
             val = mapping[ans]
             if dim in ['E', 'S', 'T', 'J']:
                 scores[dim] += 6 - val
