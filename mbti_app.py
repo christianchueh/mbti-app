@@ -5,6 +5,7 @@ import numpy as np
 import tempfile
 import os
 from fpdf import FPDF
+from PIL import Image, ImageDraw, ImageFont
 
 st.set_page_config(page_title="MBTI Test System", layout="centered")
 
@@ -44,9 +45,9 @@ if st.session_state.get("page") == 2:
 
 if st.session_state.get("page") == 3:
     st.subheader("Interests & Experiences")
-    interests_list = ["Programming", "Math", "English", "Blocks", "Drawing", "Reading", "Writing", "Speaking", "Logic", "Robotics", "Teamwork", "Leadership", "Design"]
-    interests = st.multiselect("Select your interests:", interests_list)
-    experience = st.text_area("Briefly describe your personal or competition experience")
+    interests_list = ["程式", "數學", "英文", "積木", "繪畫", "閱讀", "寫作", "表達", "邏輯推理", "機器人", "團隊合作", "領導", "設計"]
+    interests = st.multiselect("請選擇您的興趣：", interests_list)
+    experience = st.text_area("參賽或個人經歷簡述")
 
     if st.button("Generate PDF Report"):
         scores = {'E': 0, 'I': 0, 'S': 0, 'N': 0, 'T': 0, 'F': 0, 'J': 0, 'P': 0}
@@ -84,24 +85,37 @@ if st.session_state.get("page") == 3:
         plt.savefig(tmp_img.name)
         plt.close()
 
-        # Create PDF (fully English)
+        # Create image with Chinese interests and experience
+        img_width, img_height = 800, 400
+        interest_exp_img = Image.new("RGB", (img_width, img_height), "white")
+        draw = ImageDraw.Draw(interest_exp_img)
+        try:
+            font = ImageFont.truetype("NotoSansTC[wght].ttf", size=20)
+        except:
+            font = ImageFont.load_default()
+
+        draw.text((10, 10), "興趣: " + ", ".join(interests), font=font, fill="black")
+        draw.text((10, 100), "經歷: " + experience, font=font, fill="black")
+
+        interest_img_file = tempfile.NamedTemporaryFile(suffix=".png", delete=False)
+        interest_exp_img.save(interest_img_file.name)
+
+        # Create PDF (fully English except embedded image)
         tmp_pdf = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False)
         pdf = FPDF()
         pdf.add_page()
         pdf.set_font("Arial", size=12)
 
-        pdf.cell(200, 10, txt="MBTI Test Report", ln=True, align='C')
+        pdf.cell(200, 10, "MBTI Test Report", new_x="LMARGIN", new_y="NEXT", align='C')
         pdf.ln(10)
         name_str = st.session_state.name if st.session_state.name else "User"
-        pdf.multi_cell(0, 10, txt=f"Name: {name_str}    Age: {st.session_state.age}    Gender: {st.session_state.gender}")
-        pdf.cell(200, 10, txt=f"MBTI Personality Type: {result}", ln=True)
+        pdf.multi_cell(0, 10, f"Name: {name_str}    Age: {st.session_state.age}    Gender: {st.session_state.gender}")
+        pdf.cell(200, 10, f"MBTI Personality Type: {result}", new_x="LMARGIN", new_y="NEXT")
         for pair in [('E', 'I'), ('S', 'N'), ('T', 'F'), ('J', 'P')]:
-            pdf.cell(200, 10, txt=f"{pair[0]}: {scores[pair[0]]} / {pair[1]}: {scores[pair[1]]}", ln=True)
+            pdf.cell(200, 10, f"{pair[0]}: {scores[pair[0]]} / {pair[1]}: {scores[pair[1]]}", new_x="LMARGIN", new_y="NEXT")
         pdf.ln(5)
-        pdf.multi_cell(0, 10, txt="Interests: " + ", ".join(interests))
-        pdf.ln(2)
-        pdf.multi_cell(0, 10, txt="Experience: " + experience)
         pdf.image(tmp_img.name, x=50, w=100)
+        pdf.image(interest_img_file.name, x=10, y=None, w=180)
 
         pdf.output(tmp_pdf.name)
         with open(tmp_pdf.name, "rb") as f:
