@@ -1,4 +1,4 @@
-# MBTI Test System (中文題目＋嵌入圖片 PDF 避免亂碼)
+
 import streamlit as st
 import matplotlib.pyplot as plt
 import numpy as np
