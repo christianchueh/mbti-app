@@ -115,7 +115,7 @@ if st.session_state.get("page") == 3:
         # 建立 PDF
         tmp_pdf = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False)
         pdf = FPDF()
-        pdf.add_font('NotoSansTC', '', '"NotoSansTC[wght].ttf', uni=True)
+        pdf.add_font('NotoSansTC', '', 'NotoSansTC[wght].ttf', uni=True)
         pdf.add_page()
         pdf.set_font("NotoSansTC", size=12)
 
