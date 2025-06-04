@@ -1,10 +1,16 @@
-# 可在 Google Colab 執行的 Streamlit 版本
+# 可在 Google Colab 或 Streamlit Cloud 執行的 MBTI 測驗
 import streamlit as st
 import matplotlib.pyplot as plt
 import numpy as np
 import tempfile
-from fpdf import FPDF
 import os
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfbase import pdfmetrics
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.units import cm
 
 st.set_page_config(page_title="MBTI 測驗系統", layout="centered")
 
@@ -84,27 +90,27 @@ if st.session_state.get("page") == 3:
         plt.savefig(tmp_img.name)
         plt.close()
 
-        # 建立 PDF，使用支援中文的字型
-        font_path = "/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc"
-        if not os.path.exists(font_path):
-            st.error("找不到支援中文的字型，請安裝 NotoSansCJK-Regular.ttc")
-        else:
-            pdf = FPDF()
-            pdf.add_page()
-            pdf.add_font("Noto", style="", fname=font_path, uni=True)
-            pdf.set_font("Noto", size=12)
+        # 使用 reportlab 產生 PDF（含中文字體）
+        tmp_pdf = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False)
+        pdfmetrics.registerFont(TTFont('Noto', 'NotoSansTC-Regular.ttf'))  # 請上傳字體檔案
+        doc = SimpleDocTemplate(tmp_pdf.name, pagesize=A4)
+        styles = getSampleStyleSheet()
+        styles['Normal'].fontName = 'Noto'
+        styles['Title'].fontName = 'Noto'
+        content = []
 
-            pdf.cell(200, 10, txt="MBTI 測驗報告", ln=True, align='C')
-            pdf.ln(10)
-            pdf.multi_cell(0, 10, f"姓名: {st.session_state.name} 年紀: {st.session_state.age} 性別: {st.session_state.gender}")
-            pdf.cell(200, 10, txt=f"MBTI 人格類型: {result}", ln=True)
-            for pair in [('E', 'I'), ('S', 'N'), ('T', 'F'), ('J', 'P')]:
-                pdf.cell(200, 10, txt=f"{pair[0]}: {scores[pair[0]]} / {pair[1]}: {scores[pair[1]]}", ln=True)
-            pdf.multi_cell(0, 10, "興趣: " + ", ".join(interests))
-            pdf.multi_cell(0, 10, "經歷: " + experience)
-            pdf.image(tmp_img.name, x=50, w=100)
+        content.append(Paragraph("MBTI 測驗報告", styles['Title']))
+        content.append(Spacer(1, 12))
+        content.append(Paragraph(f"姓名: {st.session_state.name} 年紀: {st.session_state.age} 性別: {st.session_state.gender}", styles['Normal']))
+        content.append(Paragraph(f"MBTI 人格類型: {result}", styles['Normal']))
+        for pair in [('E', 'I'), ('S', 'N'), ('T', 'F'), ('J', 'P')]:
+            content.append(Paragraph(f"{pair[0]}: {scores[pair[0]]} / {pair[1]}: {scores[pair[1]]}", styles['Normal']))
+        content.append(Paragraph("興趣: " + ", ".join(interests), styles['Normal']))
+        content.append(Paragraph("經歷: " + experience, styles['Normal']))
+        content.append(Spacer(1, 12))
+        content.append(Image(tmp_img.name, width=12*cm, height=12*cm))
 
-            tmp_pdf = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False)
-            pdf.output(tmp_pdf.name)
-            with open(tmp_pdf.name, "rb") as f:
-                st.download_button("📄 下載 PDF 報告", f, file_name="MBTI_報告.pdf")
+        doc.build(content)
+
+        with open(tmp_pdf.name, "rb") as f:
+            st.download_button("📄 下載 PDF 報告", f, file_name="MBTI_報告.pdf")
