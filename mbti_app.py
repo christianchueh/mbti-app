@@ -1,143 +1,91 @@
-# MBTI Test System (中文題目＋嵌入圖片 PDF 避免亂碼)
 import streamlit as st
-import matplotlib.pyplot as plt
-import numpy as np
-import tempfile
-import os
-from fpdf import FPDF
-from PIL import Image, ImageDraw, ImageFont
 
-st.set_page_config(page_title="MBTI 測驗系統", layout="centered")
+# 自訂 CSS：優化排版與響應式樣式
+st.markdown("""
+<style>
+    body {
+        font-family: "Noto Sans TC", sans-serif;
+    }
+    .stTextInput > div > input, .stTextArea > div > textarea {
+        font-size: 16px;
+    }
+    .stButton > button {
+        font-size: 16px;
+        padding: 8px 24px;
+    }
+    .stHeader {
+        margin-top: 20px;
+    }
+    @media screen and (max-width: 600px) {
+        .stTextInput > div > input, .stTextArea > div > textarea {
+            font-size: 14px;
+        }
+        .stButton > button {
+            width: 100%;
+            margin-top: 5px;
+        }
+    }
+</style>
+""", unsafe_allow_html=True)
 
-st.title("MBTI 測驗系統")
+# 初始化 Session State
+if 'page' not in st.session_state:
+    st.session_state.page = 0
+if 'data' not in st.session_state:
+    st.session_state.data = {
+        'name': '', 'age': '', 'gender': '', 'grade': '',
+        'family_background': '', 'education_expectation': '',
+        'favorite_subjects': '', 'learning_style': '',
+        'activities': '', 'awards': ''
+    }
 
-# 第一頁：個人資料
-if "page" not in st.session_state:
-    st.session_state.page = 1
-if "mbti_answers" not in st.session_state:
-    st.session_state.mbti_answers = []
-if "question_index" not in st.session_state:
-    st.session_state.question_index = 0
+def next_page():
+    st.session_state.page += 1
 
-if st.session_state.page == 1:
-    with st.form("user_info"):
-        name = st.text_input("姓名")
-        age = st.number_input("年紀", min_value=0, max_value=120, step=1)
-        gender = st.selectbox("性別", ["男", "女", "其他"])
-        next1 = st.form_submit_button("下一頁")
+def prev_page():
+    st.session_state.page -= 1
 
-    if next1 and name:
-        st.session_state.name = name
-        st.session_state.age = age
-        st.session_state.gender = gender
-        st.session_state.page = 2
+# 每頁的內容函數
+def page_basic_info():
+    with st.container():
+        st.header("👤 基本資料")
+        st.session_state.data['name'] = st.text_input("姓名", st.session_state.data['name'])
+        st.session_state.data['age'] = st.text_input("年齡", st.session_state.data['age'])
+        st.session_state.data['gender'] = st.text_input("性別", st.session_state.data['gender'])
+        st.session_state.data['grade'] = st.text_input("就讀年級", st.session_state.data['grade'])
 
-mbti_questions = [
-    ("我喜歡參加社交活動。", 'E'), ("我偏好獨處時間。", 'I'),
-    ("我做決定時依據邏輯。", 'T'), ("我做決定時依據感受。", 'F'),
-    ("我偏好事先規劃好一切。", 'J'), ("我偏好隨機應變。", 'P'),
-    ("我關注具體細節。", 'S'), ("我著重大局與可能性。", 'N'),
-    ("我在人群中感到充滿活力。", 'E'), ("我獨處時感到充電。", 'I'),
-    ("我習慣用理性解決問題。", 'T'), ("我重視他人感受。", 'F'),
-    ("我喜歡列出待辦清單。", 'J'), ("我傾向臨場反應。", 'P'),
-    ("我觀察力敏銳、注重現實。", 'S'), ("我喜歡幻想與可能性。", 'N'),
-    ("我喜歡和很多人互動。", 'E'), ("我只和熟悉的人互動。", 'I'),
-    ("我說話直白。", 'T'), ("我說話委婉。", 'F'),
-    ("我喜歡掌控事情的進度。", 'J'), ("我隨遇而安。", 'P'),
-    ("我相信眼見為憑。", 'S'), ("我相信直覺。", 'N'),
-    ("我重視效率。", 'T'), ("我重視和諧。", 'F'),
-    ("我會把事情安排妥當。", 'J'), ("我容易被突發事件吸引。", 'P'),
-    ("我依據現實做選擇。", 'S'), ("我經常腦中浮現新想法。", 'N')
-]
+def page_family_info():
+    with st.container():
+        st.header("🏠 家庭背景")
+        st.session_state.data['family_background'] = st.text_area("家庭背景", st.session_state.data['family_background'])
+        st.session_state.data['education_expectation'] = st.text_area("升學期待", st.session_state.data['education_expectation'])
 
-if st.session_state.page == 2:
-    st.subheader("MBTI 測驗 (30題)")
-    index = st.session_state.question_index
-    question, dimension = mbti_questions[index]
-    answer = st.radio(f"問題 {index+1}: {question}", ["非常同意", "同意", "普通", "不同意", "非常不同意"], key=f"q{index}")
+def page_learning_style():
+    with st.container():
+        st.header("📚 學習興趣與風格")
+        st.session_state.data['favorite_subjects'] = st.text_input("喜歡的科目", st.session_state.data['favorite_subjects'])
+        st.session_state.data['learning_style'] = st.text_input("學習風格（例如：視覺型、動手型）", st.session_state.data['learning_style'])
 
-    if st.button("下一題"):
-        st.session_state.mbti_answers.append((answer, dimension))
-        st.session_state.question_index += 1
-        if st.session_state.question_index >= len(mbti_questions):
-            st.session_state.page = 3
+def page_experience_skills():
+    with st.container():
+        st.header("🎖️ 活動與技能")
+        st.session_state.data['activities'] = st.text_area("活動經歷", st.session_state.data['activities'])
+        st.session_state.data['awards'] = st.text_area("得獎紀錄", st.session_state.data['awards'])
 
-if st.session_state.page == 3:
-    st.subheader("興趣與經歷")
-    interests_list = ["程式", "數學", "英文", "積木", "繪畫", "閱讀", "寫作", "表達", "邏輯推理", "機器人", "團隊合作", "領導", "設計"]
-    interests = []
-    cols = st.columns(4)
-    for i, interest in enumerate(interests_list):
-        if cols[i % 4].checkbox(interest):
-            interests.append(interest)
+def page_summary():
+    with st.container():
+        st.header("📋 輸入摘要確認")
+        for key, value in st.session_state.data.items():
+            st.markdown(f"**{key}**: {value}")
 
-    experience = st.text_area("參賽或個人經歷簡述")
+# 頁面清單
+pages = [page_basic_info, page_family_info, page_learning_style, page_experience_skills, page_summary]
+pages[st.session_state.page]()
 
-    if st.button("生成 PDF 報告"):
-        scores = {'E': 0, 'I': 0, 'S': 0, 'N': 0, 'T': 0, 'F': 0, 'J': 0, 'P': 0}
-        mapping = {"非常同意": 1, "同意": 2, "普通": 3, "不同意": 4, "非常不同意": 5}
-        for ans, dim in st.session_state.mbti_answers:
-            val = mapping[ans]
-            if dim in ['E', 'S', 'T', 'J']:
-                scores[dim] += 6 - val
-            else:
-                scores[dim] += val
-
-        result = ''.join([
-            'E' if scores['E'] >= scores['I'] else 'I',
-            'S' if scores['S'] >= scores['N'] else 'N',
-            'T' if scores['T'] >= scores['F'] else 'F',
-            'J' if scores['J'] >= scores['P'] else 'P'
-        ])
-
-        labels = ['E', 'I', 'S', 'N', 'T', 'F', 'J', 'P']
-        values = [scores[l] for l in labels]
-        angles = np.linspace(0, 2 * np.pi, len(labels), endpoint=False).tolist()
-        values += values[:1]
-        angles += angles[:1]
-
-        fig, ax = plt.subplots(subplot_kw=dict(polar=True))
-        ax.plot(angles, values)
-        ax.fill(angles, values, alpha=0.25)
-        ax.set_xticks(angles[:-1])
-        ax.set_xticklabels(labels)
-        ax.set_yticklabels([])
-        ax.set_title("MBTI Rader Chart")
-
-        tmp_img = tempfile.NamedTemporaryFile(suffix=".png", delete=False)
-        plt.savefig(tmp_img.name)
-        plt.close()
-
-        img_width, img_height = 800, 500
-        info_img = Image.new("RGB", (img_width, img_height), "white")
-        draw = ImageDraw.Draw(info_img)
-        try:
-            font = ImageFont.truetype("NotoSansTC[wght].ttf", size=22)
-        except:
-            font = ImageFont.load_default()
-
-        draw.text((10, 10), f"姓名: {st.session_state.name}", font=font, fill="black")
-        draw.text((10, 60), "興趣: " + ", ".join(interests), font=font, fill="black")
-        draw.text((10, 130), "經歷: " + experience, font=font, fill="black")
-
-        info_img_file = tempfile.NamedTemporaryFile(suffix=".png", delete=False)
-        info_img.save(info_img_file.name)
-
-        tmp_pdf = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False)
-        pdf = FPDF()
-        pdf.add_page()
-        pdf.set_font("Arial", size=12)
-
-        pdf.cell(200, 10, "MBTI Test Report", new_x="LMARGIN", new_y="NEXT", align='C')
-        pdf.set_x(10)
-        pdf.cell(200, 10, f"MBTI Personality Type: {result}", new_x="LMARGIN", new_y="NEXT")
-        pdf.set_x(10)
-        for pair in [('E', 'I'), ('S', 'N'), ('T', 'F'), ('J', 'P')]:
-            pdf.cell(200, 10, f"{pair[0]}: {scores[pair[0]]} / {pair[1]}: {scores[pair[1]]}", new_x="LMARGIN", new_y="NEXT")
-        pdf.ln(5)
-        pdf.image(tmp_img.name, x=50, w=100)
-        pdf.image(info_img_file.name, x=10, y=None, w=180)
-
-        pdf.output(tmp_pdf.name)
-        with open(tmp_pdf.name, "rb") as f:
-            st.download_button("📄 下載 PDF 報告", f, file_name="MBTI_報告.pdf")
+# 分頁按鈕置中
+col1, col2, col3 = st.columns([1, 2, 1])
+with col2:
+    if st.session_state.page > 0:
+        st.button("← 上一頁", on_click=prev_page)
+    if st.session_state.page < len(pages) - 1:
+        st.button("下一頁 →", on_click=next_page)
