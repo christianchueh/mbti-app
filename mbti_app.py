@@ -22,44 +22,44 @@ feedback_criteria = {
     "Linguistic": [
         (17, 20, "++ Strong verbal thinker; excels in written and oral expression"),
         (13, 16, "+ Solid potential; enjoys communication and word play"),
-        (9, 12, "- Moderate; communication is functional but not a primary strength"),
-        (0, 8, "0 Lower preference; may benefit from vocabulary support or language scaffolding"),
+        (9, 12, "0 Moderate; communication is functional but not a primary strength"),
+        (0, 8, "- Lower preference; may benefit from vocabulary support or language scaffolding"),
     ],
     "Logical–Mathematical": [
-        (18, 20, "Strong analytical mind; quickly grasps patterns and logic"),
-        (14, 17, "Good potential; enjoys reasoning but may need structure"),
-        (10, 13, "Developing; benefits from guided practice with logic and sequencing"),
-        (0, 9, "Less natural inclination; scaffolded challenges help improve conceptual grasp"),
+        (18, 20, "++ Strong analytical mind; quickly grasps patterns and logic"),
+        (14, 17, "+ Good potential; enjoys reasoning but may need structure"),
+        (10, 13, "0 Developing; benefits from guided practice with logic and sequencing"),
+        (0, 9, "- Less natural inclination; scaffolded challenges help improve conceptual grasp"),
     ],
     "Musical": [
-        (16, 20, "Deeply musical thinker; uses rhythm, melody, and tone for learning and emotion"),
-        (12, 15, "Responsive to music; uses it for mood or memory"),
-        (8, 11, "Occasional musical interests; not a learning preference"),
-        (0, 7, "Minimal interest; might respond better to other intelligences"),
+        (16, 20, "++ Deeply musical thinker; uses rhythm, melody, and tone for learning and emotion"),
+        (12, 15, "+ Responsive to music; uses it for mood or memory"),
+        (8, 11, "0 Occasional musical interests; not a learning preference"),
+        (0, 7, "- Minimal interest; might respond better to other intelligences"),
     ],
     "Spatial": [
-        (17, 20, "Highly visual-spatial thinker; strong with imagery, design, or navigation"),
-        (13, 16, "Visual learner; enjoys maps, diagrams, and design tasks"),
-        (9, 12, "Developing spatial skills; benefits from visual organizers"),
-        (0, 8, "Not a visual-first learner; may prefer verbal or bodily modes"),
+        (17, 20, "++ Highly visual-spatial thinker; strong with imagery, design, or navigation"),
+        (13, 16, "+ Visual learner; enjoys maps, diagrams, and design tasks"),
+        (9, 12, "0 Developing spatial skills; benefits from visual organizers"),
+        (0, 8, "- Not a visual-first learner; may prefer verbal or bodily modes"),
     ],
     "Bodily–Kinesthetic": [
-        (16, 20, "Highly physical learner; thinks best through movement or hands-on tasks"),
-        (12, 15, "Enjoys physical activity; learns well through role-play or tactile experiences"),
-        (8, 11, "Developing coordination; hands-on scaffolding recommended"),
-        (0, 7, "Less kinesthetic preference; may gravitate to abstract or verbal tasks"),
+        (16, 20, "++ Highly physical learner; thinks best through movement or hands-on tasks"),
+        (12, 15, "+ Enjoys physical activity; learns well through role-play or tactile experiences"),
+        (8, 11, "0 Developing coordination; hands-on scaffolding recommended"),
+        (0, 7, "- Less kinesthetic preference; may gravitate to abstract or verbal tasks"),
     ],
     "Intrapersonal": [
-        (17, 20, "Strong self-awareness; reflective, goal-oriented, emotionally intelligent"),
-        (13, 16, "Reflective tendencies; open to self-growth"),
-        (9, 12, "Emerging awareness; may need prompts for reflection and goal-setting"),
-        (0, 8, "Struggles with emotional insight; scaffolded SEL strategies are helpful"),
+        (17, 20, "++ Strong self-awareness; reflective, goal-oriented, emotionally intelligent"),
+        (13, 16, "+ Reflective tendencies; open to self-growth"),
+        (9, 12, "0 Emerging awareness; may need prompts for reflection and goal-setting"),
+        (0, 8, "- Struggles with emotional insight; scaffolded SEL strategies are helpful"),
     ],
     "Interpersonal": [
-        (17, 20, "Socially intuitive; skilled at reading others and navigating group dynamics"),
-        (13, 16, "Friendly and supportive; comfortable in team settings"),
-        (9, 12, "Growing empathy and awareness; benefits from group roles and discussions"),
-        (0, 8, "Social cues are difficult; structured interaction and feedback are useful"),
+        (17, 20, "++ Socially intuitive; skilled at reading others and navigating group dynamics"),
+        (13, 16, "+ Friendly and supportive; comfortable in team settings"),
+        (9, 12, "0 Growing empathy and awareness; benefits from group roles and discussions"),
+        (0, 8, "- Social cues are difficult; structured interaction and feedback are useful"),
     ]
 }
 
@@ -73,53 +73,53 @@ def get_feedback(intelligence_type, score):
 # 每頁問題資料
 pages = [
     ('Linguistic', [
-        "It’s easy for me to express my thoughts during an argument or debate.",
-        "I enjoy a good lecture, speech or info session.",
-        "I am irritated when I hear an argument or statement that sounds illogical.",
-        "I'm good at finding the fine points of word meanings.",
-        "I'd like to study the structure and logic of languages."
+        "It’s easy for me to express my thoughts during an argument or debate. 在爭論或辯論時，我能輕鬆表達自己的想法。",
+        "I enjoy a good lecture, speech or info session. 我喜歡聽精彩的演講、演說或說明會。",
+        "I am irritated when I hear an argument or statement that sounds illogical. 聽到不合邏輯的論點或陳述時，我會感到煩躁。",
+        "I'm good at finding the fine points of word meanings. 我擅長發現字裡行間的細微差別。",
+        "I'd like to study the structure and logic of languages. 我對研究語言與邏輯有興趣。"
     ]),
     ('Logical–Mathematical', [
-        "I can add or multiply in my head.",
-        "I like to work with calculators and computers.",
-        "I like to work puzzles and play games.",
-        "I often see patterns and relationships between numbers faster and easier than others.",
-        "I like to work with numbers and figures."
+        "I can add or multiply in my head. 我可以心算加法或乘法。",
+        "I like to work with calculators and computers. 我喜歡使用計算機和電腦。",
+        "I like to work puzzles and play games. 我喜歡玩拼圖和遊戲。",
+        "I often see patterns and relationships between numbers faster and easier than others. 我常常比別人更快、更容易發現數字裡的規律和關係。",
+        "I like to work with numbers and figures. 我喜歡研究數字和圖形。"
     ]),
     ('Musical', [
-        "I can play (or used to play) a musical instrument.",
-        "I can associate music with my moods.",
-        "Life seems empty without music.",
-        "I often connect a piece of music with some event in my life.",
-        "I like to hum, whistle and sing in the shower or when I'm alone."
+        "I can play (or used to play) a musical instrument. 我能或(曾經能)演奏樂器。",
+        "I can associate music with my moods. 我能用音樂表達自己的情緒。",
+        "Life seems empty without music. 生活中沒有音樂會變得很空虛。",
+        "I often connect a piece of music with some event in my life. 我的回憶常讓我聯想起某些音樂。",
+        "I like to hum, whistle and sing in the shower or when I'm alone. 我喜歡在洗澡時或獨處時哼歌、吹口哨和唱歌。"
     ]),
     ('Spatial', [
-        "I'd rather draw a map than give someone verbal directions.",
-        "I always know north from south no matter where I am.",
-        "I always understand the directions that come with new gadgets or appliances.",
-        "I can look at an object one way and see it sideways or backwards just as easily.",
-        "Just looking at shapes of buildings and structures is pleasurable to me."
+        "I'd rather draw a map than give someone verbal directions. 我比較喜歡畫地圖描述勝過於口頭敘述。",
+        "I always know north from south no matter where I am. 不論在哪裡，我都能清楚分辨南北方向。",
+        "I always understand the directions that come with new gadgets or appliances. 我總是能理解新器材或家電所附的使用說明。",
+        "I can look at an object one way and see it sideways or backwards just as easily. 我能輕鬆地把看到的東西轉換成側面或顛倒的樣子。",
+        "Just looking at shapes of buildings and structures is pleasurable to me. 只是欣賞建築和結構的造型就能讓我感到愉悅。"
     ]),
     ('Bodily–Kinesthetic', [
-        "I pick up new dance steps fast.",
-        "Learning to ride a bike (or skates) was easy.",
-        "My sense of balance and coordination is good.",
-        "I enjoy building models (or sculpting).",
-        "I'm good at athletics."
+        "I pick up new dance steps fast. 我很容易就能學會新的舞步。",
+        "Learning to ride a bike (or skates) was easy. 學會騎腳踏車（或溜冰）對我而言很輕鬆。",
+        "My sense of balance and coordination is good. 我的平衡感和協調性很好。",
+        "I enjoy building models (or sculpting). 我喜歡做模型（或雕塑）。",
+        "I'm good at athletics. 我在體育方面表現優秀。"
     ]),
     ('Intrapersonal', [
-        "I'm usually aware of the expression on my face.",
-        "I stay 'in touch' with my moods. I have no trouble identifying them.",
-        "I often reflect on my emotions and try to understand their roots.",
-        "I regularly set goals for myself after reflecting.",
-        "I often take time to understand what truly makes me happy."
+        "I'm usually aware of the expression on my face. 我通常能察覺自己臉部的表情變化。",
+        "I stay 'in touch' with my moods. I have no trouble identifying them. 我很清楚自己的情緒，能輕鬆辨識並掌握它們。",
+        "I often reflect on my emotions and try to understand their roots. 我經常深刻反思自己的情緒，尋找它們背後的根源。",
+        "I regularly set goals for myself after reflecting. 我會經常反思並為自己設定具體的目標。",
+        "I often take time to understand what truly makes me happy. 我會花時間去探索自己真正的快樂來源。"
     ]),
     ('Interpersonal', [
-        "I'm sensitive to the expressions on other people's faces.",
-        "I am sensitive to the moods of others.",
-        "I can easily adapt my communication style to suit different people.",
-        "I can easily tell when someone is upset, even if they don’t say anything.",
-        "I can sense when someone is uncomfortable in a social situation."
+        "I'm sensitive to the expressions on other people's faces. 我很敏感，能察覺別人臉上的表情變化。",
+        "I am sensitive to the moods of others. 我對別人的情緒很敏感。",
+        "I can easily adapt my communication style to suit different people. 我可以輕易地配合不同的人改變自己的溝通風格。",
+        "I can easily tell when someone is upset, even if they don’t say anything. 即使對方不開口，我也能輕易感覺到他們在生氣或難過。",
+        "I can sense when someone is uncomfortable in a social situation. 我能感覺到別人在社交場合時的不安或尷尬。"
     ]),
     ('Summary', [])
 ]
@@ -143,10 +143,15 @@ col_center = st.columns([1, 4, 1])[1]
 with col_center:
     if current_page == 'Summary':
         st.title("📊 統計結果與分析")
+        positive_traits = []
         for key in st.session_state.scores:
             score = st.session_state.scores[key]
             interpretation = get_feedback(key, score)
             st.markdown(f"### {key}: {score} 分\n> {interpretation}")
+            if interpretation.startswith("++") or interpretation.startswith("+"):
+                positive_traits.append(f"{key} ({interpretation[:2]})")
+        if positive_traits:
+            st.markdown(f"\n**🟢 你的優勢向度為：** {', '.join(positive_traits)}")
         st.markdown("---")
         st.success("感謝您的填答！")
     else:
