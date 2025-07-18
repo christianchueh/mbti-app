@@ -199,7 +199,7 @@ def page_summary():
     # 生成並提供下載 TXT 檔案
     txt_path = save_mbti_to_txt()
     st.download_button(
-        label="下載MBTI結果",
+        label="下載測驗結果",
         data=open(txt_path, "r", encoding="utf-8").read(),
         file_name=f"{datetime.date.today()}_{st.session_state.data['name']}_mbti.txt",
         mime="text/plain"
