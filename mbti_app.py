@@ -61,8 +61,9 @@ trait_labels = {
     'J': 'J.Judging', 'P': 'P.Perceiving'
 }
 
-# 畫雷達圖
-def draw_radar_chart(scores, save_path=None):
+
+# 畫雷達圖，並直接顯示而不儲存
+def draw_radar_chart(scores):
     traits = list(trait_labels.keys())
     labels = [trait_labels[t] for t in traits]  # 使用英文標籤
     values = [scores[t] for t in traits] + [scores[traits[0]]]
@@ -74,14 +75,11 @@ def draw_radar_chart(scores, save_path=None):
     ax.set_xticks(angles[:-1])
     ax.set_xticklabels(labels, fontsize=10)  # 顯示英文標籤
     ax.set_yticklabels([])
-    if save_path:
-        fig.savefig(save_path)
-    st.pyplot(fig)
+    st.pyplot(fig)  # 直接顯示在 Streamlit 中，而不儲存為檔案
 
-# 將資料與作答轉成圖檔
-# 將資料與作答轉成圖檔
+
+# 將資料與作答轉成圖檔（不儲存）
 def generate_summary_image():
-    os.makedirs("report", exist_ok=True)
     W, H = 1000, 3000  # 延長高度以容納所有問題與答案
     img = Image.new("RGB", (W, H), color="white")
     draw = ImageDraw.Draw(img)
@@ -109,9 +107,24 @@ def generate_summary_image():
             y += 30
         y += 10  # 調整每題之間的間距
 
-    path = os.path.join("report", "summary_temp.png")
-    img.save(path)
-    return path
+    # 不儲存圖片，直接顯示摘要內容
+    st.image(img)  # 顯示在 Streamlit 頁面上，而不是儲存
+
+
+# 更新 `save_mbti_to_txt` 使其直接下載 TXT 文件
+def save_mbti_to_txt():
+    # 生成 TXT 文件並提供下載
+    txt_path = f"{datetime.date.today()}_{st.session_state.data['name']}_mbti.txt"
+    with open(txt_path, "w", encoding="utf-8") as file:
+        file.write("📋 學涯健診摘要\n")
+        for k, v in st.session_state.data.items():
+            file.write(f"{k}: {v}\n")
+        file.write("\n🧠 MBTI 題目與作答：\n")
+        for i, (trait, question) in enumerate(mbti_questions):
+            ans = st.session_state.mbti_answers.get(i, "")
+            file.write(f"{i + 1}. {question} → {ans}\n")
+    return txt_path
+
 # 各分頁內容
 def page_basic_info():
     st.header("👤 基本資料")
@@ -140,33 +153,12 @@ def page_mbti():
         answer = st.radio(f"{i+1}. {question}", list(mbti_options.keys()), key=key)
         st.session_state.mbti_scores[trait] += mbti_options[answer]
         st.session_state.mbti_answers[i] = answer
-
-# 將MBTI答案儲存至TXT檔案
-def save_mbti_to_txt():
-    # 創建報告資料夾
-    os.makedirs("report", exist_ok=True)
-    txt_path = os.path.join("report", f"{datetime.date.today()}_{st.session_state.data['name']}_mbti.txt")
-
-    # 將測驗結果保存到TXT檔案
-    with open(txt_path, "w", encoding="utf-8") as file:
-        file.write("📋 學涯健診摘要\n")
-        for k, v in st.session_state.data.items():
-            file.write(f"{k}: {v}\n")
-        file.write("\n🧠 MBTI 題目與作答：\n")
-        for i, (trait, question) in enumerate(mbti_questions):
-            ans = st.session_state.mbti_answers.get(i, "")
-            file.write(f"{i + 1}. {question} → {ans}\n")
-
-    return txt_path
-
-
 # 在結果統整頁面添加簡單的分析與類型解釋
 def page_summary():
     st.header("📋 結果統整與匯出")
 
-    # 畫雷達圖
-    radar_path = os.path.join("report", "radar.png")
-    draw_radar_chart(st.session_state.mbti_scores, save_path=radar_path)
+    # 直接顯示雷達圖，而不儲存
+    draw_radar_chart(st.session_state.mbti_scores)
 
     mbti = ''
     mbti += 'E' if st.session_state.mbti_scores['E'] >= st.session_state.mbti_scores['I'] else 'I'
@@ -203,8 +195,6 @@ def page_summary():
     st.write("### MBTI 類型解釋：")
     st.write("**E:外向** , **I:內向** , **S:實感** , **N:直覺**")
     st.write("**T:思考** , **F:情感** , **J:判斷型** , **P:感知型**")
-
-    summary_path = generate_summary_image()
 
     # 生成並提供下載 TXT 檔案
     txt_path = save_mbti_to_txt()
