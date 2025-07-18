@@ -143,8 +143,11 @@ def page_mbti():
 
 # 將MBTI答案儲存至TXT檔案
 def save_mbti_to_txt():
+    # 創建報告資料夾
     os.makedirs("report", exist_ok=True)
     txt_path = os.path.join("report", f"{datetime.date.today()}_{st.session_state.data['name']}_mbti.txt")
+
+    # 將測驗結果保存到TXT檔案
     with open(txt_path, "w", encoding="utf-8") as file:
         file.write("📋 學涯健診摘要\n")
         for k, v in st.session_state.data.items():
@@ -153,12 +156,15 @@ def save_mbti_to_txt():
         for i, (trait, question) in enumerate(mbti_questions):
             ans = st.session_state.mbti_answers.get(i, "")
             file.write(f"{i + 1}. {question} → {ans}\n")
+
     return txt_path
 
 
 # 在結果統整頁面添加簡單的分析與類型解釋
 def page_summary():
     st.header("📋 結果統整與匯出")
+
+    # 畫雷達圖
     radar_path = os.path.join("report", "radar.png")
     draw_radar_chart(st.session_state.mbti_scores, save_path=radar_path)
 
@@ -199,9 +205,9 @@ def page_summary():
     st.write("**T:思考** , **F:情感** , **J:判斷型** , **P:感知型**")
 
     summary_path = generate_summary_image()
-    txt_path = save_mbti_to_txt()
 
-    # 顯示並下載TXT檔案
+    # 生成並提供下載 TXT 檔案
+    txt_path = save_mbti_to_txt()
     st.download_button(
         label="下載MBTI結果",
         data=open(txt_path, "r", encoding="utf-8").read(),
