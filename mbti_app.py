@@ -151,8 +151,12 @@ col_center = st.columns([1, 4, 1])[1]
 with col_center:
     def save_to_google_sheet(name, age, scores):
         creds_dict = st.secrets["gcp_service_account"]
-        scopes = ["https://www.googleapis.com/auth/spreadsheets"]
+        scopes = [
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/drive"
+        ]
         creds = Credentials.from_service_account_info(creds_dict, scopes=scopes)
+
         client = gspread.authorize(creds)
 
         sheet = client.open("MI-Results").sheet1  # 試算表名稱
